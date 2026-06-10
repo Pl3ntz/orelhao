@@ -3,7 +3,7 @@ import Security
 
 /// Senhas SIP no Keychain (kSecClassGenericPassword). Config de conta NUNCA guarda senha.
 public enum KeychainStore {
-    private static let service = "dev.vplentz.dialtone.sip"
+    private static let service = "dev.vplentz.orelhao.sip"
 
     public static func savePassword(_ password: String, accountId: UUID) throws {
         let data = Data(password.utf8)

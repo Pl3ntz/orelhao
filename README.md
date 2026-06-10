@@ -1,4 +1,4 @@
-# Dialtone
+# Orelhão
 
 Softphone SIP nativo para macOS — "MicroSIP do Mac" com UI própria em SwiftUI.
 Motor [PJSIP 2.17](https://github.com/pjsip/pjproject) (mesmo do MicroSIP), bridge Obj-C++ (PJSUA2), GUI SwiftUI moderna.
@@ -14,12 +14,12 @@ Motor [PJSIP 2.17](https://github.com/pjsip/pjproject) (mesmo do MicroSIP), brid
 - Chamada de áudio echo test: CONFIRMED em ~20ms, ~1000 pkt RTP/20s, 0% loss
 - GUI: dialer com keypad, tela de chamada com timer, banner de chamada entrante,
   settings com Keychain, mute/DTMF — 13 views SwiftUI
-- Smoke test automatizado (`swift run DialtoneSmoke`) e 6 testes unitários da FSM
+- Smoke test automatizado (`swift run OrelhaoSmoke`) e 6 testes unitários da FSM
 
 ## Arquitetura
 
 ```
-DialtoneApp (SwiftUI)          ← GUI, só conhece SIPCore
+OrelhaoApp (SwiftUI)          ← GUI, só conhece SIPCore
   └─ SIPCore (Swift)           ← protocolo SIPEngine congelado, FSM pura,
       │                          CallStore @Observable, Keychain, FakeSIPEngine
       └─ SIPCoreReal           ← RealSIPEngine: delegate → AsyncStream
@@ -27,12 +27,12 @@ DialtoneApp (SwiftUI)          ← GUI, só conhece SIPCore
               └─ libpjproject 2.17 (estática; CoreAudio, OpenSSL TLS, SRTP, Opus)
 ```
 
-Decisões e trade-offs: ver memória do PE (`dialtone-project.md`) — PJSUA2 vs PJSUA,
+Decisões e trade-offs: ver memória do PE (`orelhao-project.md`) — PJSUA2 vs PJSUA,
 GCD serial vs actor, áudio 100% PJSIP, GPL vs App Store.
 
 ## Instalação rápida (sem compilar nada)
 
-O app pronto está versionado em **`dist/Dialtone-0.1.0.dmg`** (4,6MB, self-contained —
+O app pronto está versionado em **`dist/Orelhao-0.1.0.dmg`** (4,6MB, self-contained —
 dylibs de opus/openssl embutidas, não precisa de Homebrew). Montar o DMG, arrastar
 pro Applications, abrir. Primeira abertura: clique-direito → Abrir (assinatura ad-hoc,
 sem notarização). Configurar a conta SIP na engrenagem.
@@ -50,12 +50,12 @@ servidor SIP (o Asterisk abaixo) ou uma conta de provedor (ver Roadmap).
 docker compose up -d
 
 # 3. Testes + smoke (registra e liga pro echo com null-audio)
-swift test && swift run DialtoneSmoke
+swift test && swift run OrelhaoSmoke
 
 # 4. App
-./scripts/make-app.sh && open build/Dialtone.app
+./scripts/make-app.sh && open build/Orelhao.app
 # Abre registrado como 6001. Disque 600 → echo test (pede microfone na 1ª vez).
-# GUI sem rede: DIALTONE_FAKE_ENGINE=1 swift run DialtoneApp
+# GUI sem rede: ORELHAO_FAKE_ENGINE=1 swift run OrelhaoApp
 ```
 
 ## Gotchas que custaram debug (não repetir)

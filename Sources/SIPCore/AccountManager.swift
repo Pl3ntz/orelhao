@@ -7,7 +7,7 @@ public struct AccountManager: Sendable {
     public init(directory: URL? = nil) {
         let base = directory ?? FileManager.default.urls(
             for: .applicationSupportDirectory, in: .userDomainMask
-        )[0].appendingPathComponent("Dialtone", isDirectory: true)
+        )[0].appendingPathComponent("Orelhao", isDirectory: true)
         try? FileManager.default.createDirectory(at: base, withIntermediateDirectories: true)
         self.fileURL = base.appendingPathComponent("account.json")
     }

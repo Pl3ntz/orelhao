@@ -1,7 +1,7 @@
 services:
   asterisk:
     image: andrius/asterisk
-    container_name: dialtone-asterisk
+    container_name: orelhao-asterisk
     ports:
       - "5060:5060/udp"
       - "5060:5060/tcp"

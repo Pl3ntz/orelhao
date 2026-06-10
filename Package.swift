@@ -29,7 +29,7 @@ let externalLinkFlags = [
 ]
 
 let package = Package(
-    name: "Dialtone",
+    name: "Orelhao",
     platforms: [.macOS(.v14)],
     targets: [
         .target(
@@ -56,14 +56,14 @@ let package = Package(
             path: "Sources/SIPCoreReal"
         ),
         .executableTarget(
-            name: "DialtoneApp",
+            name: "OrelhaoApp",
             dependencies: ["SIPCore", "SIPCoreReal"],
-            path: "Sources/DialtoneApp"
+            path: "Sources/OrelhaoApp"
         ),
         .executableTarget(
-            name: "DialtoneSmoke",
+            name: "OrelhaoSmoke",
             dependencies: ["SIPCore", "SIPCoreReal"],
-            path: "Sources/DialtoneSmoke"
+            path: "Sources/OrelhaoSmoke"
         ),
         .testTarget(
             name: "SIPCoreTests",

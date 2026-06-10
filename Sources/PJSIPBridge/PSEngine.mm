@@ -17,11 +17,11 @@ static void PSEnsureThreadRegistered(void) {
     static thread_local pj_thread_desc desc;
     pj_thread_t *thread = NULL;
     pj_bzero(desc, sizeof(desc));
-    pj_thread_register("dialtone-queue", desc, &thread);
+    pj_thread_register("orelhao-queue", desc, &thread);
 }
 
 static NSError *PSError(NSString *message) {
-    return [NSError errorWithDomain:@"dev.vplentz.dialtone.pjsip"
+    return [NSError errorWithDomain:@"dev.vplentz.orelhao.pjsip"
                                code:1
                            userInfo:@{NSLocalizedDescriptionKey : message}];
 }
@@ -166,7 +166,7 @@ class PSAccount : public Account {
 
 - (instancetype)initWithNullAudio:(BOOL)useNullAudio {
     if ((self = [super init])) {
-        _queue = dispatch_queue_create("dev.vplentz.dialtone.pjsip", DISPATCH_QUEUE_SERIAL);
+        _queue = dispatch_queue_create("dev.vplentz.orelhao.pjsip", DISPATCH_QUEUE_SERIAL);
         _useNullAudio = useNullAudio;
         _endpoint = NULL;
         _account = NULL;
@@ -185,7 +185,7 @@ class PSAccount : public Account {
             gLibCreated = true;
 
             EpConfig config;
-            config.uaConfig.userAgent = "Dialtone/0.1";
+            config.uaConfig.userAgent = "Orelhao/0.1";
             config.logConfig.level = 3;
             config.logConfig.consoleLevel = 3;
             self->_endpoint->libInit(config);

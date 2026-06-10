@@ -1,18 +1,18 @@
 #!/bin/bash
-# Monta build/Dialtone.app a partir do binário SwiftPM.
+# Monta build/Orelhao.app a partir do binário SwiftPM.
 # Assinatura ad-hoc: suficiente pra rodar localmente com prompt de microfone (TCC).
 # Notarização/hardened runtime ficam na F5.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-APP="$ROOT/build/Dialtone.app"
+APP="$ROOT/build/Orelhao.app"
 
 cd "$ROOT"
 swift build -c release
 
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
-cp .build/release/DialtoneApp "$APP/Contents/MacOS/Dialtone"
+cp .build/release/OrelhaoApp "$APP/Contents/MacOS/Orelhao"
 
 cat > "$APP/Contents/Info.plist" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -20,13 +20,13 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
 <plist version="1.0">
 <dict>
     <key>CFBundleExecutable</key>
-    <string>Dialtone</string>
+    <string>Orelhao</string>
     <key>CFBundleIdentifier</key>
-    <string>dev.vplentz.dialtone</string>
+    <string>dev.vplentz.orelhao</string>
     <key>CFBundleName</key>
-    <string>Dialtone</string>
+    <string>Orelhão</string>
     <key>CFBundleDisplayName</key>
-    <string>Dialtone</string>
+    <string>Orelhão</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
@@ -36,7 +36,7 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
     <key>LSMinimumSystemVersion</key>
     <string>14.0</string>
     <key>NSMicrophoneUsageDescription</key>
-    <string>Dialtone usa o microfone para as chamadas de voz SIP.</string>
+    <string>Orelhao usa o microfone para as chamadas de voz SIP.</string>
     <key>NSHighResolutionCapable</key>
     <true/>
 </dict>
@@ -63,7 +63,7 @@ rewrite_deps() {
       "@executable_path/../Frameworks/$(basename "$dep")" "$target" 2>/dev/null
   done
 }
-rewrite_deps "$APP/Contents/MacOS/Dialtone"
+rewrite_deps "$APP/Contents/MacOS/Orelhao"
 for dylib in "$FRAMEWORKS"/*.dylib; do
   install_name_tool -id "@executable_path/../Frameworks/$(basename "$dylib")" "$dylib" 2>/dev/null
   rewrite_deps "$dylib"
@@ -75,8 +75,8 @@ codesign --force --sign - "$APP"
 # DMG instalável (o "setup.exe" do projeto)
 VERSION="$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$APP/Contents/Info.plist")"
 mkdir -p "$ROOT/dist"
-hdiutil create -volname "Dialtone" -srcfolder "$APP" -ov -quiet \
-  -format UDZO "$ROOT/dist/Dialtone-$VERSION.dmg"
+hdiutil create -volname "Orelhão" -srcfolder "$APP" -ov -quiet \
+  -format UDZO "$ROOT/dist/Orelhao-$VERSION.dmg"
 
 echo "[make-app] OK → $APP"
-echo "[make-app] DMG → dist/Dialtone-$VERSION.dmg"
+echo "[make-app] DMG → dist/Orelhao-$VERSION.dmg"
