@@ -6,9 +6,9 @@
 
 using namespace pj;
 
-// REGRA DE OURO (Zero Assumption + docs PJSIP): toda chamada pjlib acontece na
-// _queue serial. GCD não garante a mesma pthread entre blocos, então CADA bloco
-// passa por PSEnsureThreadRegistered() antes de tocar o PJSIP.
+// GOLDEN RULE (Zero Assumption + PJSIP docs): every pjlib call happens on the
+// serial _queue. GCD does not guarantee the same pthread across blocks, so EVERY
+// block goes through PSEnsureThreadRegistered() before touching PJSIP.
 static bool gLibCreated = false;
 
 static void PSEnsureThreadRegistered(void) {
@@ -77,7 +77,7 @@ class PSAccount;
 - (void)scheduleDestroyCall:(int)callId;
 @end
 
-// ---- Subclasses PJSUA2 (callbacks chegam em threads internas do PJSIP) ----
+// ---- PJSUA2 subclasses (callbacks arrive on PJSIP's internal threads) ----
 
 class PSCall : public Call {
   public:
@@ -120,13 +120,13 @@ class PSCall : public Call {
                 devices.getCaptureDevMedia().startTransmit(audio);
                 [engine_ onMediaActive:info.id];
             } catch (Error &err) {
-                // sem mídia não há chamada útil; o estado da chamada segue reportado
+                // without media there is no useful call; call state keeps being reported
             }
         }
     }
 
   private:
-    __unsafe_unretained PSEngine *engine_;  // engine possui as calls; nunca o inverso
+    __unsafe_unretained PSEngine *engine_;  // the engine owns the calls; never the reverse
 };
 
 class PSAccount : public Account {
@@ -160,7 +160,7 @@ class PSAccount : public Account {
     __unsafe_unretained PSEngine *engine_;
 };
 
-// ---- Fachada ----
+// ---- Facade ----
 
 @implementation PSEngine
 
@@ -191,7 +191,7 @@ class PSAccount : public Account {
             self->_endpoint->libInit(config);
 
             TransportConfig udpConfig;
-            udpConfig.port = 0;  // efêmera: NUNCA bindar 5060 (gotcha do spike)
+            udpConfig.port = 0;  // ephemeral: NEVER bind 5060 (spike gotcha)
             self->_endpoint->transportCreate(PJSIP_TRANSPORT_UDP, udpConfig);
             TransportConfig tcpConfig;
             tcpConfig.port = 0;
@@ -223,7 +223,7 @@ class PSAccount : public Account {
     dispatch_sync(_queue, ^{
         PSEnsureThreadRegistered();
         if (!self->_started) {
-            failure = PSError(@"Engine não iniciada");
+            failure = PSError(@"Engine not started");
             return;
         }
         try {
@@ -269,7 +269,7 @@ class PSAccount : public Account {
     dispatch_sync(_queue, ^{
         PSEnsureThreadRegistered();
         if (!self->_started || !self->_account) {
-            failure = PSError(@"Sem conta registrada");
+            failure = PSError(@"No registered account");
             return;
         }
         PSCall *call = new PSCall(*self->_account, self);
@@ -382,7 +382,7 @@ class PSAccount : public Account {
     });
 }
 
-// ---- Internos ----
+// ---- Internals ----
 
 - (PSCall *)callForId:(int)callId {
     std::lock_guard<std::mutex> hold(_callsMutex);
@@ -391,7 +391,7 @@ class PSAccount : public Account {
 }
 
 - (void)scheduleDestroyCall:(int)callId {
-    // NUNCA deletar a Call dentro do callback dela (use-after-free no PJSIP).
+    // NEVER delete a Call from inside its own callback (use-after-free in PJSIP).
     dispatch_async(_queue, ^{
         PSEnsureThreadRegistered();
         PSCall *call = NULL;

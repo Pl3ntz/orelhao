@@ -1,16 +1,16 @@
 import Foundation
 
-/// Contrato CONGELADO entre a GUI e qualquer engine (real ou fake).
-/// A GUI só conhece este protocolo — nunca PJSIP diretamente.
+/// FROZEN contract between the GUI and any engine (real or fake).
+/// The GUI only knows this protocol — never PJSIP directly.
 public protocol SIPEngine: AnyObject, Sendable {
-    /// Stream único de eventos. Consumir de um lugar só (CallStore).
+    /// Single event stream. Consume from exactly one place (CallStore).
     var events: AsyncStream<SIPEvent> { get }
 
     func start() throws
     func register(account: SIPAccount, password: String) async throws
     func unregister() async
 
-    /// Origina chamada. Retorna o callId da engine.
+    /// Originates a call. Returns the engine's callId.
     @discardableResult
     func call(uri: String) async throws -> Int
     func answer(callId: Int) async

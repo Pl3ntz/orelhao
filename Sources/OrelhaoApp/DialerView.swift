@@ -1,7 +1,7 @@
 import SwiftUI
 import SIPCore
 
-/// Tela principal: display editável + keypad + botão de chamada.
+/// Main screen: editable display + keypad + call button.
 struct DialerView: View {
     @Environment(CallStore.self) private var store
     let account: SIPAccount
@@ -28,7 +28,7 @@ struct DialerView: View {
 
     private var display: some View {
         ZStack {
-            TextField("Digite um número", text: $number)
+            TextField("Enter a number", text: $number)
                 .textFieldStyle(.plain)
                 .font(Theme.digitFont)
                 .multilineTextAlignment(.center)
@@ -48,7 +48,7 @@ struct DialerView: View {
                             .contentShape(Rectangle())
                     }
                     .buttonStyle(PressScaleStyle())
-                    .help("Apagar último dígito")
+                    .help("Delete last digit")
                     .transition(.opacity.combined(with: .scale))
                 }
             }
@@ -75,7 +75,7 @@ struct DialerView: View {
         }
         .buttonStyle(PressScaleStyle())
         .disabled(!canDial)
-        .help("Ligar")
+        .help("Call")
     }
 
     private func dial() {

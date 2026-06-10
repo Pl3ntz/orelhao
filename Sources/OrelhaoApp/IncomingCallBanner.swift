@@ -1,7 +1,7 @@
 import SwiftUI
 import SIPCore
 
-/// Banner destacado de chamada entrante: atender (verde) / recusar (vermelho).
+/// Prominent incoming-call banner: answer (green) / decline (red).
 struct IncomingCallBanner: View {
     @Environment(CallStore.self) private var store
     let call: CallInfo
@@ -18,7 +18,7 @@ struct IncomingCallBanner: View {
                 Text(remoteName)
                     .font(.headline)
                     .lineLimit(1)
-                Text("Chamada recebida")
+                Text("Incoming call")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -33,7 +33,7 @@ struct IncomingCallBanner: View {
             ) {
                 Task { await store.decline() }
             }
-            .help("Recusar")
+            .help("Decline")
 
             CircleControlButton(
                 systemImage: "phone.fill",
@@ -43,7 +43,7 @@ struct IncomingCallBanner: View {
             ) {
                 Task { await store.answer() }
             }
-            .help("Atender")
+            .help("Answer")
         }
         .padding(14)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 20))

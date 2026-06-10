@@ -1,8 +1,8 @@
 import Foundation
 
-/// Engine simulada — permite desenvolver e demonstrar a GUI inteira sem PJSIP/rede.
-/// Comportamento: registro responde em 0.4s; chamada progride calling → early → confirmed;
-/// digitar "fail" no URI simula 404.
+/// Simulated engine — lets the entire GUI be developed and demoed without PJSIP or a network.
+/// Behavior: registration responds in 0.4s; a call progresses calling → early → confirmed;
+/// putting "fail" in the URI simulates a 404.
 public final class FakeSIPEngine: SIPEngine, @unchecked Sendable {
     public let events: AsyncStream<SIPEvent>
     private let continuation: AsyncStream<SIPEvent>.Continuation
@@ -73,7 +73,7 @@ public final class FakeSIPEngine: SIPEngine, @unchecked Sendable {
         continuation.finish()
     }
 
-    /// Dispara uma chamada entrante simulada (menu de dev / previews).
+    /// Triggers a simulated incoming call (dev menu / previews).
     public func simulateIncomingCall(from uri: String = "sip:6002@127.0.0.1") {
         let callId = allocateCallId()
         continuation.yield(.incomingCall(callId: callId, remoteURI: uri))

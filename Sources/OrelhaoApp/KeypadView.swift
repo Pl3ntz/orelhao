@@ -1,13 +1,13 @@
 import SwiftUI
 
-/// Tecla do keypad telefônico (dígito + letras ABC).
+/// Phone keypad key (digit + ABC letters).
 struct KeypadKey: Identifiable {
     let digit: String
     let letters: String
     var id: String { digit }
 }
 
-/// Keypad 4×3 reutilizável (dialer e DTMF). Sem estado próprio.
+/// Reusable 4×3 keypad (dialer and DTMF). Holds no state of its own.
 struct KeypadView: View {
     var keySize: CGFloat = 72
     let onKey: (String) -> Void

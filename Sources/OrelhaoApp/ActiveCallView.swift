@@ -1,7 +1,7 @@
 import SwiftUI
 import SIPCore
 
-/// Substitui o dialer durante uma chamada: avatar, estado/timer e controles.
+/// Replaces the dialer during a call: avatar, state/timer, and controls.
 struct ActiveCallView: View {
     @Environment(CallStore.self) private var store
     let call: CallInfo
@@ -55,13 +55,13 @@ struct ActiveCallView: View {
     private var statusLine: some View {
         switch call.state {
         case .calling:
-            statusText("chamando…")
+            statusText("calling…")
         case .early:
-            statusText("tocando…")
+            statusText("ringing…")
         case .connecting:
-            statusText("conectando…")
+            statusText("connecting…")
         case .incoming:
-            statusText("chamada recebida…")
+            statusText("incoming call…")
         case .confirmed:
             HStack(spacing: 8) {
                 if call.mediaActive {
@@ -78,11 +78,11 @@ struct ActiveCallView: View {
                             .foregroundStyle(.secondary)
                     }
                 } else {
-                    statusText("em chamada")
+                    statusText("in call")
                 }
             }
         case .disconnected:
-            Text("chamada encerrada")
+            Text("call ended")
                 .font(.callout.weight(.medium))
                 .foregroundStyle(Theme.dangerRed)
         case .idle:
@@ -100,7 +100,7 @@ struct ActiveCallView: View {
         HStack(spacing: 32) {
             CircleControlButton(
                 systemImage: store.isMuted ? "mic.slash.fill" : "mic.fill",
-                label: "mudo",
+                label: "mute",
                 fill: store.isMuted ? .white : nil,
                 iconColor: store.isMuted ? .black : .primary,
                 isDisabled: !isConfirmed
@@ -110,7 +110,7 @@ struct ActiveCallView: View {
 
             CircleControlButton(
                 systemImage: "circle.grid.3x3.fill",
-                label: "teclado",
+                label: "keypad",
                 isDisabled: !isConfirmed
             ) {
                 showDTMF = true
@@ -118,7 +118,7 @@ struct ActiveCallView: View {
 
             CircleControlButton(
                 systemImage: "phone.down.fill",
-                label: "encerrar",
+                label: "end",
                 fill: Theme.dangerRed,
                 iconColor: .white
             ) {

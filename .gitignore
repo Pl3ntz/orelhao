@@ -10,3 +10,6 @@ build/
 scripts/*.log
 
 .DS_Store
+
+# release artifacts live in GitHub Releases
+dist/

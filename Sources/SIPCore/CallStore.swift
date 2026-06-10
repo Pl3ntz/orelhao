@@ -1,7 +1,7 @@
 import Foundation
 import Observation
 
-/// Único consumidor do stream de eventos da engine. Fonte de verdade da GUI.
+/// Sole consumer of the engine's event stream. Source of truth for the GUI.
 @Observable
 @MainActor
 public final class CallStore {
@@ -10,7 +10,7 @@ public final class CallStore {
     public private(set) var isMuted = false
     public private(set) var lastError: String?
 
-    /// Chamada em destaque na UI (a mais recente não-desconectada).
+    /// Call featured in the UI (the most recent non-disconnected one).
     public var activeCall: CallInfo? {
         calls.values
             .filter { $0.state != .disconnected && $0.state != .idle }
@@ -34,14 +34,14 @@ public final class CallStore {
         }
     }
 
-    // MARK: - Comandos (GUI → engine)
+    // MARK: - Commands (GUI → engine)
 
     public func register(account: SIPAccount, password: String) async {
         do {
             try engine.start()
             try await engine.register(account: account, password: password)
         } catch {
-            lastError = "Registro falhou: \(error.localizedDescription)"
+            lastError = "Registration failed: \(error.localizedDescription)"
             registration = .failed(code: 0, reason: lastError ?? "")
         }
     }
@@ -54,12 +54,12 @@ public final class CallStore {
         let uri = Self.normalizeURI(destination, domain: account?.domain, port: account?.port)
         do {
             let callId = try await engine.call(uri: uri)
-            // engine real emite callState logo em seguida; pré-registra direção/URI
+            // the real engine emits callState right after; pre-register direction/URI
             if calls[callId] == nil {
                 calls[callId] = CallInfo(id: callId, remoteURI: uri, direction: .outgoing, state: .calling)
             }
         } catch {
-            lastError = "Chamada falhou: \(error.localizedDescription)"
+            lastError = "Call failed: \(error.localizedDescription)"
         }
     }
 
@@ -90,12 +90,12 @@ public final class CallStore {
 
     public func clearError() { lastError = nil }
 
-    /// Remove chamadas encerradas do estado (limpeza da UI).
+    /// Removes ended calls from state (UI cleanup).
     public func dismissEndedCalls() {
         calls = calls.filter { $0.value.state != .disconnected }
     }
 
-    // MARK: - Eventos (engine → estado)
+    // MARK: - Events (engine → state)
 
     private func apply(_ event: SIPEvent) {
         switch event {
@@ -107,7 +107,7 @@ public final class CallStore {
 
         case .callState(let callId, let state, let statusCode):
             guard var call = calls[callId] else {
-                // chamada originada pela engine antes do pré-registro da GUI
+                // call originated by the engine before the GUI pre-registered it
                 calls[callId] = CallInfo(
                     id: callId, remoteURI: "?", direction: .outgoing,
                     state: state, statusCode: statusCode
@@ -136,7 +136,7 @@ public final class CallStore {
 
     // MARK: - Helpers
 
-    /// "600" + conta 127.0.0.1 → "sip:600@127.0.0.1"; URIs completas passam direto.
+    /// "600" + account 127.0.0.1 → "sip:600@127.0.0.1"; full URIs pass through unchanged.
     public static func normalizeURI(_ input: String, domain: String?, port: Int?) -> String {
         let trimmed = input.trimmingCharacters(in: .whitespacesAndNewlines)
         if trimmed.hasPrefix("sip:") || trimmed.hasPrefix("sips:") { return trimmed }

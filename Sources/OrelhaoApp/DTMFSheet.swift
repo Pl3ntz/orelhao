@@ -1,7 +1,7 @@
 import SwiftUI
 import SIPCore
 
-/// Sheet com keypad DTMF: cada tecla envia o dígito imediatamente.
+/// Sheet with a DTMF keypad: each key sends the digit immediately.
 struct DTMFSheet: View {
     @Environment(CallStore.self) private var store
     @Environment(\.dismiss) private var dismiss
@@ -11,7 +11,7 @@ struct DTMFSheet: View {
     var body: some View {
         VStack(spacing: 18) {
             HStack {
-                Text("Teclado DTMF")
+                Text("DTMF Keypad")
                     .font(.headline)
                 Spacer()
                 Button {
@@ -22,7 +22,7 @@ struct DTMFSheet: View {
                         .foregroundStyle(.secondary)
                 }
                 .buttonStyle(.plain)
-                .help("Fechar")
+                .help("Close")
             }
 
             Text(sentDigits.isEmpty ? " " : sentDigits)

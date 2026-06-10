@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Identidade visual do Orelhao — dark-first, adaptativa.
+/// Orelhao visual identity — dark-first, adaptive.
 enum Theme {
     static let windowSize = CGSize(width: 420, height: 720)
 
@@ -13,7 +13,7 @@ enum Theme {
     static let keyLettersFont = Font.system(size: 9, weight: .semibold, design: .rounded)
 }
 
-/// Fundo da janela: gradiente sutil que respeita light/dark.
+/// Window background: subtle gradient that respects light/dark.
 struct AppBackground: View {
     var body: some View {
         LinearGradient(
@@ -36,7 +36,7 @@ struct AppBackground: View {
     }
 }
 
-/// Estilo de botão com spring discreto ao pressionar.
+/// Button style with a subtle spring on press.
 struct PressScaleStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label

@@ -1,7 +1,7 @@
 import Foundation
 import Security
 
-/// Senhas SIP no Keychain (kSecClassGenericPassword). Config de conta NUNCA guarda senha.
+/// SIP passwords in the Keychain (kSecClassGenericPassword). Account config NEVER stores the password.
 public enum KeychainStore {
     private static let service = "dev.vplentz.orelhao.sip"
 

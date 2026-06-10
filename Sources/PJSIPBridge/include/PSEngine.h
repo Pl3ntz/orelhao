@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 
-// Fachada Obj-C pura sobre o PJSUA2. Header NÃO pode incluir nada de C++/PJSIP —
-// é o que o SwiftPM expõe pro Swift via module map automático.
+// Pure Obj-C facade over PJSUA2. The header must NOT include anything from C++/PJSIP —
+// it is what SwiftPM exposes to Swift via the automatic module map.
 
 typedef NS_ENUM(NSInteger, PSCallState) {
     PSCallStateIdle = 0,
@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
                     isIncoming:(BOOL)isIncoming;
 @end
 
-// Callbacks SEMPRE entregues na main queue.
+// Callbacks are ALWAYS delivered on the main queue.
 @protocol PSEngineDelegate <NSObject>
 - (void)engineRegistrationChangedWithActive:(BOOL)active
                                  statusCode:(NSInteger)statusCode
@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak, nullable) id<PSEngineDelegate> delegate;
 
-/// nullAudio=YES roda sem device de som (testes/CI, sem prompt de microfone).
+/// nullAudio=YES runs without a sound device (tests/CI, no microphone prompt).
 - (instancetype)initWithNullAudio:(BOOL)useNullAudio;
 
 - (BOOL)startAndReturnError:(NSError **)error;
@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
                          error:(NSError **)error;
 - (void)unregisterAccount;
 
-/// Retorna callId do PJSIP, ou -1 em erro.
+/// Returns the PJSIP callId, or -1 on error.
 - (NSInteger)makeCallTo:(NSString *)destURI error:(NSError **)error;
 - (void)answerCall:(NSInteger)callId;
 - (void)hangupCall:(NSInteger)callId;

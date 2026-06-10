@@ -1,6 +1,6 @@
 #!/bin/bash
-# Compila PJSIP 2.17 para o spike F0 (arm64, host-only).
-# Universal binary (arm64+x86_64) fica para a F5 — ver tasks do projeto.
+# Builds PJSIP 2.17 for the F0 spike (arm64, host-only).
+# Universal binary (arm64+x86_64) is deferred to F5 — see project tasks.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -15,11 +15,11 @@ fi
 
 cd "$SRC"
 
-# Obrigatório existir antes do configure (pjlib não compila sem ele)
+# Must exist before configure (pjlib won't build without it)
 touch pjlib/include/pj/config_site.h
 
 echo "$LOG_PREFIX configure (opus=$OPUS_PREFIX ssl=${SSL_FLAG:-auto})"
-# Áudio-only no MVP: vídeo arrastaria SDL2/ffmpeg do Homebrew pro bundle
+# Audio-only for the MVP: video would drag SDL2/ffmpeg from Homebrew into the bundle
 ./configure --with-opus="$OPUS_PREFIX" $SSL_FLAG CFLAGS="-O2" \
   --disable-video --disable-sdl --disable-ffmpeg --disable-vpx --disable-openh264
 
@@ -29,5 +29,5 @@ make dep
 echo "$LOG_PREFIX make -j$(sysctl -n hw.ncpu)"
 make -j"$(sysctl -n hw.ncpu)"
 
-echo "$LOG_PREFIX OK — binários pjsua:"
+echo "$LOG_PREFIX OK — pjsua binaries:"
 ls pjsip-apps/bin/

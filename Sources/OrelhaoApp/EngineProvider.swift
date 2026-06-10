@@ -2,8 +2,8 @@ import Foundation
 import SIPCore
 import SIPCoreReal
 
-// ZONA DO PE — agentes de GUI NÃO editam este arquivo.
-// Composition root: a GUI pede a engine aqui e nunca instancia uma diretamente.
+// PE ZONE — GUI agents must NOT edit this file.
+// Composition root: the GUI obtains the engine here and never instantiates one directly.
 enum EngineProvider {
     @MainActor
     static func makeEngine() -> any SIPEngine {

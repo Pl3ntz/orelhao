@@ -1,7 +1,7 @@
 import Foundation
 
-/// Transições válidas de uma chamada SIP. Função pura — transição ilegal retorna nil
-/// e NUNCA é aplicada (o chamador loga e descarta).
+/// Valid transitions for a SIP call. Pure function — an illegal transition returns nil
+/// and is NEVER applied (the caller logs it and discards).
 public enum CallStateMachine {
     public static func transition(from state: CallState, on event: CallTransitionEvent) -> CallState? {
         switch (state, event) {
@@ -30,10 +30,10 @@ public enum CallStateMachine {
 }
 
 public enum CallTransitionEvent: Sendable, Equatable {
-    case dialed       // usuário originou
-    case invited      // INVITE entrou
+    case dialed       // user originated
+    case invited      // INVITE received
     case provisional  // 180/183
     case accepted     // 200 OK
-    case established  // ACK / mídia confirmada
-    case ended        // BYE / CANCEL / erro
+    case established  // ACK / media confirmed
+    case ended        // BYE / CANCEL / error
 }

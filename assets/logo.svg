@@ -1,0 +1,45 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Orelhão: the iconic Brazilian payphone shell, reduced to its silhouette -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0E1B2C"/>
+      <stop offset="1" stop-color="#16324F"/>
+    </linearGradient>
+    <linearGradient id="shell" x1="48" y1="40" x2="208" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFB347"/>
+      <stop offset="1" stop-color="#FF7A1A"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="256" height="256" rx="58" fill="url(#bg)"/>
+
+  <!-- acoustic shell: open ring, the "ear" -->
+  <path d="M128 30
+           C74.9 30 32 72.9 32 126
+           C32 179.1 74.9 222 128 222
+           C151.5 222 173 213.6 189.7 199.6
+           L168.9 175.9
+           C157.8 184.9 143.6 190 128 190
+           C92.7 190 64 161.3 64 126
+           C64 90.7 92.7 62 128 62
+           C163.3 62 192 90.7 192 126
+           L224 126
+           C224 72.9 181.1 30 128 30 Z"
+        fill="url(#shell)"/>
+
+  <!-- handset -->
+  <path d="M76 144
+           C76 122 99 108 128 108
+           C157 108 180 122 180 144
+           L180 158
+           C180 164.6 174.6 170 168 170
+           L149 170
+           C142.4 170 137 164.6 137 158
+           L137 146
+           C131 144.7 125 144.7 119 146
+           L119 158
+           C119 164.6 113.6 170 107 170
+           L88 170
+           C81.4 170 76 164.6 76 158 Z"
+        fill="#F4F7FA"/>
+</svg>

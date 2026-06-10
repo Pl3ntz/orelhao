@@ -1,7 +1,7 @@
 import SwiftUI
 import SIPCore
 
-/// Form da conta SIP. Persiste via AccountManager e devolve a conta salva ao pai.
+/// SIP account form. Persists via AccountManager and hands the saved account back to the parent.
 struct SettingsSheet: View {
     @Environment(\.dismiss) private var dismiss
 
@@ -26,18 +26,18 @@ struct SettingsSheet: View {
     var body: some View {
         VStack(spacing: 0) {
             Form {
-                Section("Conta SIP") {
-                    TextField("Nome de exibição", text: $displayName)
-                    TextField("Usuário", text: $username)
-                    TextField("Domínio", text: $domain)
-                    TextField("Porta", text: $portText)
-                    Picker("Transporte", selection: $transport) {
+                Section("SIP Account") {
+                    TextField("Display name", text: $displayName)
+                    TextField("Username", text: $username)
+                    TextField("Domain", text: $domain)
+                    TextField("Port", text: $portText)
+                    Picker("Transport", selection: $transport) {
                         ForEach(SIPTransport.allCases, id: \.self) { transport in
                             Text(transport.rawValue.uppercased()).tag(transport)
                         }
                     }
                     .pickerStyle(.segmented)
-                    SecureField("Senha", text: $password)
+                    SecureField("Password", text: $password)
                 }
             }
             .formStyle(.grouped)
@@ -53,10 +53,10 @@ struct SettingsSheet: View {
             }
 
             HStack {
-                Button("Cancelar") { dismiss() }
+                Button("Cancel") { dismiss() }
                     .keyboardShortcut(.cancelAction)
                 Spacer()
-                Button("Salvar e registrar") { save() }
+                Button("Save & Register") { save() }
                     .keyboardShortcut(.defaultAction)
                     .buttonStyle(.borderedProminent)
                     .tint(Theme.callGreen)
@@ -80,7 +80,7 @@ struct SettingsSheet: View {
 
     private func save() {
         guard let port = Int(portText), (1...65535).contains(port) else {
-            validationError = "Porta inválida — use um valor entre 1 e 65535."
+            validationError = "Invalid port — use a value between 1 and 65535."
             return
         }
         let account = SIPAccount(
@@ -96,7 +96,7 @@ struct SettingsSheet: View {
             onSave(account, password)
             dismiss()
         } catch {
-            validationError = "Falha ao salvar a conta: \(error.localizedDescription)"
+            validationError = "Failed to save account: \(error.localizedDescription)"
         }
     }
 }

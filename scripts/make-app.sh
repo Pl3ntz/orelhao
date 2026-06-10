@@ -1,7 +1,7 @@
 #!/bin/bash
-# Monta build/Orelhao.app a partir do binário SwiftPM.
-# Assinatura ad-hoc: suficiente pra rodar localmente com prompt de microfone (TCC).
-# Notarização/hardened runtime ficam na F5.
+# Assembles build/Orelhao.app from the SwiftPM binary.
+# Ad-hoc signing: enough to run locally with the microphone (TCC) prompt.
+# Notarization/hardened runtime are deferred to F5.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -36,14 +36,18 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
     <key>LSMinimumSystemVersion</key>
     <string>14.0</string>
     <key>NSMicrophoneUsageDescription</key>
-    <string>Orelhao usa o microfone para as chamadas de voz SIP.</string>
+    <string>Orelhão uses the microphone for SIP voice calls.</string>
     <key>NSHighResolutionCapable</key>
     <true/>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
 </dict>
 </plist>
 PLIST
 
-# Embute dylibs do Homebrew (opus/openssl) → app self-contained, roda em Mac limpo
+cp "$ROOT/assets/AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"
+
+# Bundle Homebrew dylibs (opus/openssl) → self-contained app, runs on a clean Mac
 FRAMEWORKS="$APP/Contents/Frameworks"
 mkdir -p "$FRAMEWORKS"
 BUNDLED_LIBS=(
@@ -72,7 +76,7 @@ done
 codesign --force --sign - "$FRAMEWORKS"/*.dylib
 codesign --force --sign - "$APP"
 
-# DMG instalável (o "setup.exe" do projeto)
+# Installable DMG (the project's "setup.exe")
 VERSION="$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$APP/Contents/Info.plist")"
 mkdir -p "$ROOT/dist"
 hdiutil create -volname "Orelhão" -srcfolder "$APP" -ov -quiet \

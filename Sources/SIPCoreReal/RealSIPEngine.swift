@@ -2,8 +2,8 @@ import Foundation
 import PJSIPBridge
 import SIPCore
 
-/// Engine real: SIPEngine (Swift) → PSEngine (Obj-C/PJSUA2).
-/// Delegate do bridge chega na main queue; o yield no AsyncStream é thread-safe.
+/// Real engine: SIPEngine (Swift) → PSEngine (Obj-C/PJSUA2).
+/// Bridge delegate callbacks arrive on the main queue; yielding into the AsyncStream is thread-safe.
 public final class RealSIPEngine: NSObject, SIPEngine, @unchecked Sendable {
     public let events: AsyncStream<SIPEvent>
     private let continuation: AsyncStream<SIPEvent>.Continuation
@@ -48,7 +48,7 @@ public final class RealSIPEngine: NSObject, SIPEngine, @unchecked Sendable {
         var failure: NSError?
         let callId = bridge.makeCall(to: uri, error: &failure)
         if callId < 0 {
-            throw SIPEngineError.callFailed(failure?.localizedDescription ?? "makeCall falhou")
+            throw SIPEngineError.callFailed(failure?.localizedDescription ?? "makeCall failed")
         }
         return callId
     }

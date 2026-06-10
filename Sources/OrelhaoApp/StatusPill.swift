@@ -1,7 +1,7 @@
 import SwiftUI
 import SIPCore
 
-/// Pill de status de registro: cinza/amarelo pulsante/verde/vermelho.
+/// Registration status pill: gray / pulsing amber / green / red.
 struct StatusPill: View {
     let state: RegistrationState
     @State private var pulsing = false
@@ -38,19 +38,19 @@ struct StatusPill: View {
 
     private var label: String {
         switch state {
-        case .unregistered: "desconectado"
-        case .registering: "registrando…"
-        case .registered: "registrado"
-        case .failed(let code, _): "falhou (\(code))"
+        case .unregistered: "offline"
+        case .registering: "registering…"
+        case .registered: "registered"
+        case .failed(let code, _): "failed (\(code))"
         }
     }
 
     private var helpText: String {
         switch state {
-        case .failed(let code, let reason): "Registro falhou — \(code): \(reason)"
-        case .registered: "Conta registrada no servidor SIP"
-        case .registering: "Registrando no servidor SIP…"
-        case .unregistered: "Sem registro ativo"
+        case .failed(let code, let reason): "Registration failed — \(code): \(reason)"
+        case .registered: "Account registered with the SIP server"
+        case .registering: "Registering with the SIP server…"
+        case .unregistered: "No active registration"
         }
     }
 

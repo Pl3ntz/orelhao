@@ -2,8 +2,8 @@ import Foundation
 import SIPCore
 import SIPCoreReal
 
-// Smoke test F2: registra no Asterisk local (docker compose up -d) e liga pro
-// echo test (600) com null-audio. Sai 0 = PASS, 1 = FAIL.
+// F2 smoke test: registers with the local Asterisk (docker compose up -d) and calls
+// the echo test (600) with null audio. Exits 0 = PASS, 1 = FAIL.
 
 let engine = RealSIPEngine(useNullAudio: true)
 let account = AccountManager.localTestAccount
@@ -17,14 +17,14 @@ func fail(_ message: String) -> Never {
 
 do {
     try engine.start()
-    print("engine iniciada")
+    print("engine started")
 } catch {
     fail("start: \(error.localizedDescription)")
 }
 
 do {
     try await engine.register(account: account, password: password)
-    print("→ REGISTER enviado para \(account.registrarURI)")
+    print("→ REGISTER sent to \(account.registrarURI)")
 } catch {
     fail("register: \(error.localizedDescription)")
 }
@@ -36,26 +36,26 @@ let outcome = await withTaskGroup(of: Bool.self) { group -> Bool in
         for await event in engine.events {
             switch event {
             case .registration(.registered):
-                print("✅ registrado no Asterisk")
+                print("✅ registered with Asterisk")
                 do {
                     activeCallId = try await engine.call(uri: "sip:600@127.0.0.1")
-                    print("→ chamando sip:600 (echo), callId=\(activeCallId!)")
+                    print("→ calling sip:600 (echo), callId=\(activeCallId!)")
                 } catch {
                     print("❌ call: \(error)")
                     return false
                 }
             case .registration(.failed(let code, let reason)):
-                print("❌ registro falhou: \(code) \(reason)")
+                print("❌ registration failed: \(code) \(reason)")
                 return false
             case .callState(_, .confirmed, _):
                 sawConfirmed = true
-                print("✅ chamada CONFIRMED")
+                print("✅ call CONFIRMED")
             case .mediaActive(let callId):
-                print("✅ mídia ativa — segurando 8s de RTP")
+                print("✅ media active — holding 8s of RTP")
                 try? await Task.sleep(for: .seconds(8))
                 await engine.hangup(callId: callId)
             case .callState(_, .disconnected, let code):
-                print("chamada encerrada (status \(code))")
+                print("call ended (status \(code))")
                 return sawConfirmed
             default:
                 break
@@ -72,11 +72,11 @@ let outcome = await withTaskGroup(of: Bool.self) { group -> Bool in
     return first
 }
 
-await Task { @MainActor in }.value  // drena callbacks pendentes da main queue
+await Task { @MainActor in }.value  // drain pending main-queue callbacks
 engine.shutdown()
 
 if outcome {
-    print("✅ SMOKE PASS — registro + chamada + mídia + hangup OK")
+    print("✅ SMOKE PASS — registration + call + media + hangup OK")
     exit(0)
 }
-fail("fluxo não completou (veja eventos acima)")
+fail("flow did not complete (see events above)")

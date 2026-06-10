@@ -34,11 +34,11 @@ public enum SIPTransport: String, Codable, Sendable, CaseIterable {
 
 public enum CallState: String, Sendable, Equatable {
     case idle
-    case calling      // INVITE enviado, sem resposta provisória
-    case incoming     // INVITE recebido
-    case early        // 180/183 (tocando)
-    case connecting   // 200 OK recebido, ACK em trânsito
-    case confirmed    // chamada ativa
+    case calling      // INVITE sent, no provisional response yet
+    case incoming     // INVITE received
+    case early        // 180/183 (ringing)
+    case connecting   // 200 OK received, ACK in flight
+    case confirmed    // call active
     case disconnected
 }
 

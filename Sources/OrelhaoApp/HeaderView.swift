@@ -1,7 +1,7 @@
 import SwiftUI
 import SIPCore
 
-/// Header: nome da conta + pill de status + engrenagem de settings.
+/// Header: account name + status pill + settings gear.
 struct HeaderView: View {
     @Environment(CallStore.self) private var store
     let accountName: String
@@ -28,7 +28,7 @@ struct HeaderView: View {
                     .contentShape(Circle())
             }
             .buttonStyle(PressScaleStyle())
-            .help("Configurações da conta")
+            .help("Account settings")
         }
     }
 }

@@ -1,7 +1,7 @@
 import SwiftUI
 import SIPCore
 
-/// Raiz da GUI: header fixo + dialer/chamada com transição + overlays (banner/erro).
+/// GUI root: fixed header + dialer/call with transition + overlays (banner/error).
 struct ContentView: View {
     @Environment(CallStore.self) private var store
 
@@ -9,8 +9,8 @@ struct ContentView: View {
     @State private var password: String = AccountManager.localTestPassword
     @State private var showSettings = false
 
-    /// Chamada exibida na área principal: a ativa (exceto entrante ainda não
-    /// atendida, que fica no banner) ou a recém-encerrada (estado "encerrada").
+    /// Call shown in the main area: the active one (except an incoming call not
+    /// yet answered, which lives in the banner) or the just-ended one ("ended" state).
     private var presentedCall: CallInfo? {
         if let active = store.activeCall, active.state != .incoming {
             return active
@@ -85,7 +85,7 @@ struct ContentView: View {
         }
     }
 
-    /// Carrega a conta salva (ou usa a default de teste local) e auto-registra.
+    /// Loads the saved account (or falls back to the local test default) and auto-registers.
     private func bootstrap() async {
         let manager = AccountManager()
         if let saved = manager.load() {
@@ -95,7 +95,7 @@ struct ContentView: View {
         await store.register(account: account, password: password)
     }
 
-    /// Mostra "encerrada" brevemente e volta ao dialer.
+    /// Briefly shows "ended", then returns to the dialer.
     private func scheduleEndedDismiss() {
         Task {
             try? await Task.sleep(for: .seconds(1.4))

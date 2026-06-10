@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Botão circular de controle de chamada (mute, DTMF, hangup, answer…).
+/// Circular call-control button (mute, DTMF, hangup, answer…).
 struct CircleControlButton: View {
     let systemImage: String
     var label: String? = nil
@@ -41,7 +41,7 @@ struct CircleControlButton: View {
     }
 }
 
-/// Avatar circular com iniciais sobre gradiente.
+/// Circular avatar with initials over a gradient.
 struct CallAvatar: View {
     let name: String
     var size: CGFloat = 96

@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Toast discreto e dispensável para store.lastError.
+/// Subtle, dismissible toast for store.lastError.
 struct ErrorBanner: View {
     let message: String
     let onDismiss: () -> Void
@@ -21,7 +21,7 @@ struct ErrorBanner: View {
                     .contentShape(Circle())
             }
             .buttonStyle(.plain)
-            .help("Dispensar")
+            .help("Dismiss")
         }
         .padding(12)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14))

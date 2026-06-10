@@ -1,6 +1,6 @@
 import Foundation
 
-/// Persiste a conta SIP em Application Support (JSON sem senha; senha no Keychain).
+/// Persists the SIP account in Application Support (JSON without the password; password lives in the Keychain).
 public struct AccountManager: Sendable {
     private let fileURL: URL
 
@@ -33,9 +33,9 @@ public struct AccountManager: Sendable {
         KeychainStore.deletePassword(accountId: account.id)
     }
 
-    /// Conta default apontando pro Asterisk de teste local (docker compose do repo).
+    /// Default account pointing at the local test Asterisk (this repo's docker compose).
     public static var localTestAccount: SIPAccount {
-        SIPAccount(displayName: "Asterisk local", username: "6001", domain: "127.0.0.1")
+        SIPAccount(displayName: "Local Asterisk", username: "6001", domain: "127.0.0.1")
     }
 
     public static let localTestPassword = "test6001"

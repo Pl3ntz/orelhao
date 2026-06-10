@@ -1,97 +1,111 @@
-# Orelhão
+<p align="center">
+  <img src="assets/logo.svg" width="128" alt="Orelhão logo"/>
+</p>
 
-Softphone SIP nativo para macOS — "MicroSIP do Mac" com UI própria em SwiftUI.
-Motor [PJSIP 2.17](https://github.com/pjsip/pjproject) (mesmo do MicroSIP), bridge Obj-C++ (PJSUA2), GUI SwiftUI moderna.
+<h1 align="center">Orelhão</h1>
 
-> **Status: ARQUIVADO (2026-06-10), funcional.** MVP completo e validado: registro SIP,
-> chamadas de áudio in/out, DTMF, mute, GUI completa. Desenvolvimento pausado porque
-> alcançar telefones convencionais (PSTN) exige tronco SIP contratado (~R$20/mês) —
-> decisão adiada. Reativável em minutos: tudo abaixo continua funcionando.
+<p align="center">
+  <b>A native macOS SIP softphone — the MicroSIP of the Mac.</b><br/>
+  PJSIP 2.17 engine · Objective-C++ bridge · modern SwiftUI interface
+</p>
 
-## O que funciona (validado)
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPLv2-blue.svg" alt="License: GPLv2"/></a>
+  <img src="https://img.shields.io/badge/platform-macOS%2014%2B-black.svg?logo=apple" alt="Platform: macOS 14+"/>
+  <img src="https://img.shields.io/badge/Swift-5.10-F05138.svg?logo=swift" alt="Swift 5.10"/>
+  <img src="https://img.shields.io/badge/engine-PJSIP%202.17-FF7A1A.svg" alt="PJSIP 2.17"/>
+</p>
 
-- Registro com auth digest em Asterisk (200 OK, contato visível no servidor)
-- Chamada de áudio echo test: CONFIRMED em ~20ms, ~1000 pkt RTP/20s, 0% loss
-- GUI: dialer com keypad, tela de chamada com timer, banner de chamada entrante,
-  settings com Keychain, mute/DTMF — 13 views SwiftUI
-- Smoke test automatizado (`swift run OrelhaoSmoke`) e 6 testes unitários da FSM
+<p align="center">
+  <img src="assets/screenshot.png" width="420" alt="Orelhão main window"/>
+</p>
 
-## Arquitetura
+---
 
-```
-OrelhaoApp (SwiftUI)          ← GUI, só conhece SIPCore
-  └─ SIPCore (Swift)           ← protocolo SIPEngine congelado, FSM pura,
-      │                          CallStore @Observable, Keychain, FakeSIPEngine
-      └─ SIPCoreReal           ← RealSIPEngine: delegate → AsyncStream
-          └─ PJSIPBridge (Obj-C++) ← PSEngine sobre PJSUA2; fila serial GCD
-              └─ libpjproject 2.17 (estática; CoreAudio, OpenSSL TLS, SRTP, Opus)
-```
+*"Orelhão"* (big ear) is what Brazilians call the iconic dome-shaped public payphone.
+This is its spiritual successor: a tiny, native, open-source SIP phone for your Mac.
 
-Decisões e trade-offs: ver memória do PE (`orelhao-project.md`) — PJSUA2 vs PJSUA,
-GCD serial vs actor, áudio 100% PJSIP, GPL vs App Store.
+[MicroSIP](https://www.microsip.org/) has been the go-to lightweight softphone on
+Windows for a decade — but it's Win32/MFC and will never run on macOS. Orelhão is
+built on the same battle-tested engine (PJSIP) with a UI that actually belongs on a Mac.
 
-## Instalação rápida (sem compilar nada)
+## Features
 
-O app pronto está versionado em **`dist/Orelhao-0.1.0.dmg`** (4,6MB, self-contained —
-dylibs de opus/openssl embutidas, não precisa de Homebrew). Montar o DMG, arrastar
-pro Applications, abrir. Primeira abertura: clique-direito → Abrir (assinatura ad-hoc,
-sem notarização). Configurar a conta SIP na engrenagem.
+- 📞 Outgoing & incoming audio calls (SIP/RTP), DTMF (RFC 4733), mute
+- 🔐 Digest auth, TCP/UDP transports, SRTP-capable build (OpenSSL)
+- 🎛️ Dialer with keypad, in-call timer, incoming-call banner, account settings
+- 🔑 Passwords stored in the macOS Keychain — never on disk
+- 🪶 Self-contained 4.6 MB app — no Homebrew, no runtime dependencies
+- 🧪 Deterministic dev mode: full GUI on a fake engine (`ORELHAO_FAKE_ENGINE=1`)
 
-Lembrete: o app sozinho é o "telefone" — pra ele tocar/discar você precisa de um
-servidor SIP (o Asterisk abaixo) ou uma conta de provedor (ver Roadmap).
+## Install
 
-## Como rodar do zero
+Grab **`Orelhao-x.y.z.dmg`** from the [latest release](https://github.com/Pl3ntz/orelhao/releases/latest),
+drag to Applications, right-click → Open on first launch (ad-hoc signature, not notarized).
+
+A softphone needs something to talk to: either a SIP provider account, or the
+test Asterisk bundled in this repo (below).
+
+## Quick start (development)
 
 ```bash
-# 1. Compilar PJSIP (uma vez, ~5 min; baixa nada — tarball vendored em third_party/)
+# 1. Build PJSIP from the vendored tarball (one-time, ~5 min)
 ./scripts/build-pjsip.sh
 
-# 2. Asterisk de teste (ramais 6001/test6001 e 6002/test6002; echo no 600)
+# 2. Local test PBX — extensions 6001/6002, echo test at 600
 docker compose up -d
 
-# 3. Testes + smoke (registra e liga pro echo com null-audio)
+# 3. Unit tests + end-to-end smoke (registers and calls the echo extension)
 swift test && swift run OrelhaoSmoke
 
-# 4. App
+# 4. Build and open the app (auto-registers as 6001)
 ./scripts/make-app.sh && open build/Orelhao.app
-# Abre registrado como 6001. Disque 600 → echo test (pede microfone na 1ª vez).
-# GUI sem rede: ORELHAO_FAKE_ENGINE=1 swift run OrelhaoApp
+# Dial 600 → echo test. macOS will ask for the microphone on the first call.
 ```
 
-## Gotchas que custaram debug (não repetir)
+## Architecture
 
-1. **`pjsua` binda 5060 por default** → em teste localhost responde a si mesmo
-   (200 sem 401). Sempre `--local-port 5070`.
-2. **INVITE >1300 bytes migra pra TCP** (RFC 3261 §18.1.1) → Asterisk precisa de
-   transporte TCP além de UDP, senão "Connection refused" silencioso.
-3. **Docker Desktop/Mac não entrega UDP com `network_mode: host`** → port mapping +
-   `external_media_address=127.0.0.1` + `local_net=172.16.0.0/12` no pjsip.conf.
-4. **Threading PJSIP**: toda chamada pjlib confinada à fila serial do PSEngine com
-   guard `pj_thread_register` (GCD não garante a mesma pthread entre blocos).
+```
+OrelhaoApp (SwiftUI)            ← GUI; only knows SIPCore
+  └─ SIPCore (Swift)            ← frozen SIPEngine protocol, pure call-state FSM,
+      │                           @Observable CallStore, Keychain, FakeSIPEngine
+      └─ SIPCoreReal            ← RealSIPEngine: Obj-C delegate → AsyncStream
+          └─ PJSIPBridge (Obj-C++) ← PSEngine over PJSUA2; serial GCD queue with
+              │                      pj_thread_register guard on every hop
+              └─ libpjproject 2.17 (static; CoreAudio, OpenSSL TLS, SRTP, Opus)
+```
 
-## Roadmap para reativar (chamadas pra telefones reais)
+Design decisions worth stealing:
 
-1. **Contratar tronco SIP** (Directcall/BR DID nacional, ou Twilio/Telnyx pay-as-you-go).
-2. **Asterisk no VPS** (IP público resolve NAT): mesmos arquivos de `asterisk/`,
-   trocando senhas e adicionando o tronco:
-   ```ini
-   ; pjsip.conf — tronco (credenciais do provedor)
-   [tronco] ... type=registration/auth/endpoint conforme provedor
-   ```
-   ```ini
-   ; extensions.conf — rota de saída
-   exten => _0X.,1,Dial(PJSIP/${EXTEN}@tronco)
-   ```
-3. **Pendências técnicas no app** (1-2 sessões): transporte TLS na bridge (OpenSSL já
-   linkado), STUN/ICE se for direto sem VPS, normalização E.164 no dialer.
-4. Pendência menor: teste de áudio com microfone real (smoke usa null-audio);
-   F5 original (notarização/universal binary) só se for distribuir.
+- **PJSUA2 subclassed in Obj-C++**, exposed to Swift as a pure Obj-C delegate of
+  immutable value objects — C++ never leaks above the bridge.
+- **One serial dispatch queue owns every PJSIP call.** GCD doesn't pin threads, so
+  each block re-registers via `pj_thread_register` before touching pjlib.
+- **The GUI runs entirely against a protocol.** `FakeSIPEngine` made the whole UI
+  buildable and demoable before the real engine existed.
 
-**Limite regulatório**: número celular pessoal não vira DID (portabilidade Anatel é
-só dentro da mesma modalidade). Caller ID com número próprio: Twilio Verified Caller IDs.
+## Hard-won gotchas
 
-## Licença
+1. **`pjsua` binds port 5060 by default** — on localhost tests it answers *itself*
+   (200 OK with no auth challenge). Always `--local-port 5070`.
+2. **INVITEs over 1300 bytes silently switch to TCP** (RFC 3261 §18.1.1). Your test
+   server needs a TCP transport or you get an unexplained "Connection refused".
+3. **Docker Desktop on macOS doesn't deliver UDP with `network_mode: host`.** Use
+   port mapping + `external_media_address` + `local_net` SDP rewriting instead.
+4. **Never call pjlib from an unregistered thread** — intermittent asserts that
+   only reproduce under load.
 
-PJSIP é GPLv2 → este projeto é GPL. Incompatível com Mac App Store; distribuição
-seria DMG notarizado. Para fechar código no futuro: baresip (BSD) ou licença
-comercial Teluu.
+## Roadmap to real phone calls (PSTN)
+
+The app is a complete SIP endpoint. To dial real phone numbers it needs a SIP
+trunk from any provider (Twilio/Telnyx, or a local carrier DID):
+
+1. Point the trunk at an Asterisk (the configs in `asterisk/` work as a base).
+2. Add an outbound route: `exten => _0X.,1,Dial(PJSIP/${EXTEN}@trunk)`.
+3. App-side niceties pending: TLS transport in the bridge (OpenSSL already linked),
+   STUN/ICE for serverless NAT traversal, E.164 normalization in the dialer.
+
+## License
+
+GPLv2 — inherited from [PJSIP](https://github.com/pjsip/pjproject). That also means
+no Mac App Store; distribution is by DMG.
