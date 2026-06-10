@@ -49,7 +49,7 @@ test Asterisk bundled in this repo (below).
 ## Quick start (development)
 
 ```bash
-# 1. Build PJSIP from the vendored tarball (one-time, ~5 min)
+# 1. Download and build PJSIP (one-time, ~5 min)
 ./scripts/build-pjsip.sh
 
 # 2. Local test PBX — extensions 6001/6002, echo test at 600

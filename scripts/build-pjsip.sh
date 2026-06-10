@@ -1,11 +1,23 @@
 #!/bin/bash
-# Builds PJSIP 2.17 for the F0 spike (arm64, host-only).
+# Downloads and builds PJSIP (arm64, host-only).
 # Universal binary (arm64+x86_64) is deferred to F5 — see project tasks.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-SRC="$ROOT/third_party/pjproject-2.17"
+PJ_VERSION="2.17"
+SRC="$ROOT/third_party/pjproject-$PJ_VERSION"
+TARBALL="$ROOT/third_party/pjproject-$PJ_VERSION.tar.gz"
 LOG_PREFIX="[build-pjsip]"
+
+if [ ! -d "$SRC" ]; then
+  mkdir -p "$ROOT/third_party"
+  if [ ! -f "$TARBALL" ]; then
+    echo "$LOG_PREFIX downloading pjproject $PJ_VERSION"
+    curl -fsSL -o "$TARBALL" \
+      "https://github.com/pjsip/pjproject/archive/refs/tags/$PJ_VERSION.tar.gz"
+  fi
+  tar xzf "$TARBALL" -C "$ROOT/third_party"
+fi
 
 OPUS_PREFIX="$(brew --prefix opus)"
 SSL_FLAG=""
